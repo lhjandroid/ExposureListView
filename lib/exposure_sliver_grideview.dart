@@ -58,19 +58,25 @@ class ExposureSliverGridView<ExposureFixedCrossGridView, T>
     if (before == 0) {
       return 0;
     }
+    if (itemHeightMap.isEmpty) {
+      return 0;
+    }
     int start = _builderDelegate.firstIndex;
     int end = _builderDelegate.lastIndex;
     int firstPosition = start;
 
     // 有缓存的数据 在 往后面遍历 如果开始缓存的start比before还要小 直接返回start
-    if (itemHeightMap[start].end < before) {
+    if (itemHeightMap.length <= before) {
+      return start;
+    }
+    if (itemHeightMap[start]?.end ?? 0 < before) {
       for (int i = start + 1; i <= end; i++) {
-        if (before > itemHeightMap[i].start && before <= itemHeightMap[i].end) {
+        if (before > (itemHeightMap[i]?.start ?? 0) && before <= (itemHeightMap[i]?.end ?? 0)) {
           firstPosition = i;
           break;
         }
       }
-    } else if (itemHeightMap[start].start == before) {
+    } else if ((itemHeightMap[start]?.start ?? 0) == before) {
       if (start == 0) {
         return 0;
       }
@@ -81,18 +87,24 @@ class ExposureSliverGridView<ExposureFixedCrossGridView, T>
 
   /// 获取最后一项可见item
   int getLastPosition(double extentBefore, double extentInside) {
+    if (itemHeightMap.isEmpty) {
+      return 0;
+    }
     double lastHeight = extentBefore + extentInside;
     int start = _builderDelegate.firstIndex;
     int end = _builderDelegate.lastIndex;
     int lastPosition = end;
-    if (itemHeightMap[end].start > lastHeight) {
+    if (itemHeightMap.length <= end) {
+      return end;
+    }
+    if ((itemHeightMap[end]?.start ?? 0) > lastHeight) {
       if (end - 1 == 0) {
         return 0;
       }
       // 往前找
       for (int i = end - 1; i >= start; i--) {
-        if (lastHeight >= itemHeightMap[i].start &&
-            lastHeight < itemHeightMap[i].end) {
+        if (lastHeight >= (itemHeightMap[i]?.start ?? 0) &&
+            lastHeight < (itemHeightMap[i]?.end ?? 0)) {
           lastPosition = i;
           break;
         }
