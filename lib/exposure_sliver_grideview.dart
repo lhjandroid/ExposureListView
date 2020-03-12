@@ -58,19 +58,22 @@ class ExposureSliverGridView<ExposureFixedCrossGridView, T>
     if (before == 0) {
       return 0;
     }
-    if (itemHeightMap.isEmpty) {
+    if (itemHeightMap == null || itemHeightMap.isEmpty) {
       return 0;
     }
-    int start = _builderDelegate.firstIndex;
-    int end = _builderDelegate.lastIndex;
+    int start = _builderDelegate?.firstIndex ?? 0;
+    int end = _builderDelegate?.lastIndex ?? 0;
     int firstPosition = start;
 
     // 有缓存的数据 在 往后面遍历 如果开始缓存的start比before还要小 直接返回start
-    if (itemHeightMap.length <= before) {
+    if ((itemHeightMap?.length ?? 0) <= start) {
       return start;
     }
-    if (itemHeightMap[start]?.end ?? 0 < before) {
+    if ((itemHeightMap[start]?.end ?? 0) < before) {
       for (int i = start + 1; i <= end; i++) {
+        if (i >= (itemHeightMap?.length ?? 0)) {
+          break;
+        }
         if (before > (itemHeightMap[i]?.start ?? 0) && before <= (itemHeightMap[i]?.end ?? 0)) {
           firstPosition = i;
           break;
@@ -87,14 +90,17 @@ class ExposureSliverGridView<ExposureFixedCrossGridView, T>
 
   /// 获取最后一项可见item
   int getLastPosition(double extentBefore, double extentInside) {
-    if (itemHeightMap.isEmpty) {
+    if (itemHeightMap == null || itemHeightMap.isEmpty) {
       return 0;
     }
     double lastHeight = extentBefore + extentInside;
-    int start = _builderDelegate.firstIndex;
-    int end = _builderDelegate.lastIndex;
+    int start = _builderDelegate?.firstIndex ?? 0;
+    int end = _builderDelegate?.lastIndex ?? 0;
     int lastPosition = end;
-    if (itemHeightMap.length <= end) {
+    if (itemHeightMap.length <= start) {
+      return start;
+    }
+    if ((itemHeightMap?.length ?? 0) <= end ) {
       return end;
     }
     if ((itemHeightMap[end]?.start ?? 0) > lastHeight) {
@@ -103,6 +109,9 @@ class ExposureSliverGridView<ExposureFixedCrossGridView, T>
       }
       // 往前找
       for (int i = end - 1; i >= start; i--) {
+        if (i <= (itemHeightMap?.length ?? 0)) {
+          break;
+        }
         if (lastHeight >= (itemHeightMap[i]?.start ?? 0) &&
             lastHeight < (itemHeightMap[i]?.end ?? 0)) {
           lastPosition = i;
